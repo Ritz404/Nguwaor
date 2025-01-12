@@ -4,69 +4,58 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TikTok Video Downloader</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Poppins', Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
       background-color: #f0f0f0;
+      animation: fadeIn 2s ease-in-out;
     }
 
     .container {
       text-align: center;
       background-color: white;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
-      width: 100%;
-    }
-
-    h1 {
-      font-weight: 600;
-      margin-bottom: 20px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      animation: slideIn 1s ease-in-out;
     }
 
     input {
-      padding: 12px;
-      width: 100%;
-      margin-bottom: 20px;
-      border-radius: 6px;
+      padding: 10px;
+      width: 300px;
+      margin-bottom: 10px;
+      border-radius: 4px;
       border: 1px solid #ccc;
-      font-size: 16px;
-      outline: none;
-      transition: border-color 0.3s ease;
+      transition: all 0.3s ease;
     }
 
     input:focus {
       border-color: #007bff;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.6);
     }
 
     button {
-      padding: 12px 20px;
+      padding: 10px 20px;
       background-color: #007bff;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 16px;
-      font-weight: 600;
-      outline: none;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-      width: 100%;
+      transition: background-color 0.3s ease;
     }
 
     button:hover {
       background-color: #0056b3;
     }
 
-    button:active {
-      transform: scale(0.98);
+    .hidden {
+      display: none;
     }
 
     #videoCover {
@@ -74,11 +63,36 @@
       max-width: 300px;
       margin-top: 20px;
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
     }
 
-    .hidden {
-      display: none;
+    #videoCover:hover {
+      transform: scale(1.05);
+    }
+
+    a {
+      display: block;
+      margin-top: 10px;
+      color: #007bff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    a:hover {
+      text-decoration: underline;
+      color: #0056b3;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
   </style>
 </head>
@@ -86,9 +100,10 @@
   <div class="container">
     <h1>TikTok Video Downloader</h1>
     <input type="text" id="tiktokUrl" placeholder="Enter TikTok Video URL">
-    <button id="downloadButton">Download Video</button>
+    <button id="downloadButton">Download</button>
     <div id="result" class="hidden">
       <img id="videoCover" alt="Video Cover" />
+      <a id="noWatermarkLink" href="#" download>Download Video</a>
     </div>
   </div>
 
@@ -133,19 +148,32 @@
           const videoData = await tiktok2(url);
 
           if (!videoData.no_watermark) {
-            alert('Video without watermark not available.');
+            alert('Video not available for download or blocked.');
             return;
           }
 
           document.getElementById('result').classList.remove('hidden');
           document.getElementById('videoCover').src = videoData.cover;
 
-          const link = document.createElement('a');
-          link.href = videoData.no_watermark;
-          link.setAttribute('download', 'video_no_watermark.mp4');
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+          function downloadVideo(url, filename) {
+            axios.get(url, { responseType: 'blob' })
+              .then(response => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', filename);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+              })
+              .catch(error => {
+                alert('Error downloading video.');
+              });
+          }
+
+          document.getElementById('noWatermarkLink').addEventListener('click', () => {
+            downloadVideo(videoData.no_watermark, 'video_no_watermark.mp4');
+          });
 
         } catch (error) {
           alert('Error fetching video. Please check the URL and try again.');
