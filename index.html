@@ -103,7 +103,7 @@
     <button id="downloadButton">Download</button>
     <div id="result" class="hidden">
       <img id="videoCover" alt="Video Cover" />
-      <a id="noWatermarkLink" href="#" download>Download Video</a>
+      <a id="noWatermarkLink" href="javascript:void(0);" download>Download Video</a>
     </div>
   </div>
 
@@ -127,34 +127,17 @@
             data: encodedParams
           });
 
-          if (response.data.data) {
-            const videos = response.data.data;
-            const result = {
-              cover: videos.cover,
-              no_watermark: videos.play
-            };
-            resolve(result);
-          } else {
-            reject('Invalid video data received');
-          }
+          const videos = response.data.data;
+          const result = {
+            cover: videos.cover,
+            no_watermark: videos.play
+          };
+
+          resolve(result);
         } catch (error) {
           reject(error);
         }
       });
-    }
-
-    async function downloadVideo(url, filename) {
-      try {
-        const response = await axios.get(url, { responseType: 'blob' });
-        const videoBlob = new Blob([response.data], { type: 'video/mp4' });
-        const videoUrl = URL.createObjectURL(videoBlob);
-        const link = document.createElement('a');
-        link.href = videoUrl;
-        link.download = filename;
-        link.click();
-      } catch (error) {
-        alert('Error downloading video.');
-      }
     }
 
     document.getElementById('downloadButton').addEventListener('click', async () => {
@@ -171,6 +154,22 @@
 
           document.getElementById('result').classList.remove('hidden');
           document.getElementById('videoCover').src = videoData.cover;
+
+          function downloadVideo(url, filename) {
+            axios.get(url, { responseType: 'blob' })
+              .then(response => {
+                const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.setAttribute('download', filename);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+              })
+              .catch(error => {
+                alert('Error downloading video.');
+              });
+          }
 
           document.getElementById('noWatermarkLink').addEventListener('click', () => {
             downloadVideo(videoData.no_watermark, 'video_no_watermark.mp4');
