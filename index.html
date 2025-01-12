@@ -53,28 +53,15 @@
       max-width: 300px;
       margin-top: 20px;
     }
-
-    a {
-      display: block;
-      margin-top: 10px;
-      color: #007bff;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>TikTok Video Downloader</h1>
     <input type="text" id="tiktokUrl" placeholder="Enter TikTok Video URL">
-    <button id="downloadButton">Download</button>
+    <button id="downloadButton">Download Video</button>
     <div id="result" class="hidden">
       <img id="videoCover" alt="Video Cover" />
-      <a id="noWatermarkLink" href="#" download>Download Video</a>
-      <a id="watermarkLink" href="#" download>Download Video</a>
     </div>
   </div>
 
@@ -89,7 +76,7 @@
 
           const response = await axios({
             method: 'POST',
-            url: 'https://tikwm.com/api/', // API untuk mendapatkan video
+            url: 'https://tikwm.com/api/',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
               'Cookie': 'current_language=en',
@@ -101,8 +88,7 @@
           const videos = response.data.data;
           const result = {
             cover: videos.cover,
-            no_watermark: videos.play, // Link video tanpa watermark
-            watermark: videos.wmplay   // Link video dengan watermark
+            no_watermark: videos.play
           };
 
           resolve(result);
@@ -119,45 +105,20 @@
         try {
           const videoData = await tiktok2(url);
 
-          if (!videoData.no_watermark && !videoData.watermark) {
-            alert('Video not available for download or blocked.');
+          if (!videoData.no_watermark) {
+            alert('Video without watermark not available.');
             return;
           }
 
           document.getElementById('result').classList.remove('hidden');
           document.getElementById('videoCover').src = videoData.cover;
 
-          function downloadVideo(url, filename) {
-            axios.get(url, { responseType: 'blob' })
-              .then(response => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', filename);
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-              })
-              .catch(error => {
-                alert('Error downloading video.');
-              });
-          }
-
-          if (videoData.no_watermark) {
-            document.getElementById('noWatermarkLink').addEventListener('click', () => {
-              downloadVideo(videoData.no_watermark, 'video_no_watermark.mp4');
-            });
-          } else {
-            document.getElementById('noWatermarkLink').style.display = 'none';
-          }
-
-          if (videoData.watermark) {
-            document.getElementById('watermarkLink').addEventListener('click', () => {
-              downloadVideo(videoData.watermark, 'video_with_watermark.mp4');
-            });
-          } else {
-            document.getElementById('watermarkLink').style.display = 'none';
-          }
+          const link = document.createElement('a');
+          link.href = videoData.no_watermark;
+          link.setAttribute('download', 'video_no_watermark.mp4');
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
         } catch (error) {
           alert('Error fetching video. Please check the URL and try again.');
