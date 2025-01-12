@@ -103,7 +103,6 @@
     <button id="downloadButton">Download</button>
     <div id="result" class="hidden">
       <img id="videoCover" alt="Video Cover" />
-      <a id="noWatermarkLink" href="#" download>Download Video</a>
     </div>
   </div>
 
@@ -154,26 +153,6 @@
 
           document.getElementById('result').classList.remove('hidden');
           document.getElementById('videoCover').src = videoData.cover;
-
-          function downloadVideo(url, filename) {
-            axios.get(url, { responseType: 'blob' })
-              .then(response => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', filename);
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-              })
-              .catch(error => {
-                alert('Error downloading video.');
-              });
-          }
-
-          document.getElementById('noWatermarkLink').addEventListener('click', () => {
-            downloadVideo(videoData.no_watermark, 'video_no_watermark.mp4');
-          });
 
         } catch (error) {
           alert('Error fetching video. Please check the URL and try again.');
