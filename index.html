@@ -103,6 +103,7 @@
     <button id="downloadButton">Download</button>
     <div id="result" class="hidden">
       <img id="videoCover" alt="Video Cover" />
+      <a id="noWatermarkLink" href="#" download>Download Video</a>
     </div>
   </div>
 
@@ -126,33 +127,34 @@
             data: encodedParams
           });
 
-          const videos = response.data.data;
-          const result = {
-            cover: videos.cover,
-            no_watermark: videos.play
-          };
-
-          resolve(result);
+          if (response.data.data) {
+            const videos = response.data.data;
+            const result = {
+              cover: videos.cover,
+              no_watermark: videos.play
+            };
+            resolve(result);
+          } else {
+            reject('Invalid video data received');
+          }
         } catch (error) {
           reject(error);
         }
       });
     }
 
-    function downloadVideo(url, filename) {
-      axios.get(url, { responseType: 'blob' })
-        .then(response => {
-          const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
-          link.href = blobUrl;
-          link.setAttribute('download', filename);
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-        })
-        .catch(error => {
-          alert('Error downloading video.');
-        });
+    async function downloadVideo(url, filename) {
+      try {
+        const response = await axios.get(url, { responseType: 'blob' });
+        const videoBlob = new Blob([response.data], { type: 'video/mp4' });
+        const videoUrl = URL.createObjectURL(videoBlob);
+        const link = document.createElement('a');
+        link.href = videoUrl;
+        link.download = filename;
+        link.click();
+      } catch (error) {
+        alert('Error downloading video.');
+      }
     }
 
     document.getElementById('downloadButton').addEventListener('click', async () => {
@@ -167,12 +169,12 @@
             return;
           }
 
-          // Modify the video URL domain
-          const modifiedUrl = videoData.no_watermark.replace('https://v16m-default.akamaized.net/', 'https://shirokomd.my.id/');
+          document.getElementById('result').classList.remove('hidden');
+          document.getElementById('videoCover').src = videoData.cover;
 
-          // Hide the result and start the video download directly
-          document.getElementById('result').classList.add('hidden');
-          downloadVideo(modifiedUrl, 'video_no_watermark.mp4');
+          document.getElementById('noWatermarkLink').addEventListener('click', () => {
+            downloadVideo(videoData.no_watermark, 'video_no_watermark.mp4');
+          });
 
         } catch (error) {
           alert('Error fetching video. Please check the URL and try again.');
