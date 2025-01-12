@@ -85,6 +85,14 @@
       color: #0056b3;
     }
 
+    .confirmation {
+      margin-top: 20px;
+    }
+
+    .confirmation button {
+      margin: 5px;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
@@ -104,6 +112,11 @@
     <div id="result" class="hidden">
       <img id="videoCover" alt="Video Cover" />
       <a id="noWatermarkLink" href="#" download>Download Video</a>
+    </div>
+    <div id="confirmation" class="hidden confirmation">
+      <p>Ingin mendownload lagi?</p>
+      <button id="downloadAgain">Download lagi</button>
+      <button id="cancelDownload">Batal</button>
     </div>
   </div>
 
@@ -174,6 +187,7 @@
 
           document.getElementById('noWatermarkLink').addEventListener('click', () => {
             downloadVideo(videoData.no_watermark, 'video_no_watermark.mp4');
+            document.getElementById('confirmation').classList.remove('hidden');
           });
 
         } catch (error) {
@@ -182,6 +196,15 @@
       } else {
         alert('Please enter a valid TikTok URL');
       }
+    });
+
+    document.getElementById('downloadAgain').addEventListener('click', () => {
+      document.getElementById('confirmation').classList.add('hidden');
+      document.getElementById('tiktokUrl').value = ''; // Optionally clear the input field
+    });
+
+    document.getElementById('cancelDownload').addEventListener('click', () => {
+      document.getElementById('confirmation').classList.add('hidden');
     });
   </script>
 </body>
