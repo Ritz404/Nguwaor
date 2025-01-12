@@ -89,6 +89,7 @@
     <button id="downloadButton">Fetch Video</button>
     <div id="result" class="hidden">
       <img id="videoCover" alt="Video Cover" />
+      <button id="downloadVideoButton">Download Video</button>
     </div>
   </div>
 
@@ -140,6 +141,11 @@
           document.getElementById('result').classList.remove('hidden');
           document.getElementById('videoCover').src = videoData.cover;
 
+          // Event listener for downloading the video
+          document.getElementById('downloadVideoButton').addEventListener('click', () => {
+            downloadVideo(videoData.no_watermark, 'video_no_watermark.mp4');
+          });
+
         } catch (error) {
           alert('Error fetching video. Please check the URL and try again.');
         }
@@ -147,6 +153,22 @@
         alert('Please enter a valid TikTok URL');
       }
     });
+
+    function downloadVideo(url, filename) {
+      axios.get(url, { responseType: 'blob' })
+        .then(response => {
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', filename);
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        })
+        .catch(error => {
+          alert('Error downloading video.');
+        });
+    }
   </script>
 </body>
 </html>
