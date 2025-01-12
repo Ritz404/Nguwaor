@@ -103,6 +103,7 @@
     <button id="downloadButton">Download</button>
     <div id="result" class="hidden">
       <img id="videoCover" alt="Video Cover" />
+      <a id="noWatermarkLink" href="#" download>Download Video</a>
     </div>
   </div>
 
@@ -153,6 +154,10 @@
 
           document.getElementById('result').classList.remove('hidden');
           document.getElementById('videoCover').src = videoData.cover;
+
+          // Set the download link to the video URL
+          const downloadLink = document.getElementById('noWatermarkLink');
+          downloadLink.href = videoData.no_watermark;
 
         } catch (error) {
           alert('Error fetching video. Please check the URL and try again.');
