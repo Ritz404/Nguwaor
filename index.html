@@ -73,8 +73,8 @@
     <button id="downloadButton">Download</button>
     <div id="result" class="hidden">
       <img id="videoCover" alt="Video Cover" />
-      <a id="noWatermarkLink" href="#" download>Download Without Watermark</a>
-      <a id="watermarkLink" href="#" download>Download With Watermark</a>
+      <a id="noWatermarkLink" href="#" download>Download Video</a>
+      <a id="watermarkLink" href="#" download>Download Video</a>
     </div>
   </div>
 
@@ -127,7 +127,6 @@
           document.getElementById('result').classList.remove('hidden');
           document.getElementById('videoCover').src = videoData.cover;
 
-          // Menggunakan Blob untuk menangani download jika link tidak langsung dapat diunduh
           function downloadVideo(url, filename) {
             axios.get(url, { responseType: 'blob' })
               .then(response => {
@@ -144,7 +143,6 @@
               });
           }
 
-          // Unduh video tanpa watermark
           if (videoData.no_watermark) {
             document.getElementById('noWatermarkLink').addEventListener('click', () => {
               downloadVideo(videoData.no_watermark, 'video_no_watermark.mp4');
@@ -153,7 +151,6 @@
             document.getElementById('noWatermarkLink').style.display = 'none';
           }
 
-          // Unduh video dengan watermark
           if (videoData.watermark) {
             document.getElementById('watermarkLink').addEventListener('click', () => {
               downloadVideo(videoData.watermark, 'video_with_watermark.mp4');
