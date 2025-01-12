@@ -140,6 +140,13 @@
       });
     }
 
+    // Fungsi untuk membuat nama file acak
+    function generateRandomFilename(extension) {
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 10);
+      return `video_${timestamp}_${randomString}.${extension}`;
+    }
+
     document.getElementById('downloadButton').addEventListener('click', async () => {
       const url = document.getElementById('tiktokUrl').value;
 
@@ -172,7 +179,8 @@
           }
 
           document.getElementById('noWatermarkLink').addEventListener('click', () => {
-            downloadVideo(videoData.no_watermark, 'video_no_watermark.mp4');
+            const randomFilename = generateRandomFilename('mp4');
+            downloadVideo(videoData.no_watermark, randomFilename);
           });
 
         } catch (error) {
