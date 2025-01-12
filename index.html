@@ -89,7 +89,7 @@
 
           const response = await axios({
             method: 'POST',
-            url: 'https://tikwm.com/api/', // API yang digunakan untuk mendapatkan video
+            url: 'https://tikwm.com/api/', // API untuk mendapatkan video
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
               'Cookie': 'current_language=en',
@@ -127,21 +127,37 @@
           document.getElementById('result').classList.remove('hidden');
           document.getElementById('videoCover').src = videoData.cover;
 
-          // Menambahkan logika untuk mengganti link ke server Anda
-          const serverUrl = 'https://shirokomd.my.id/download_video?videoUrl='; // Ganti dengan server Anda
+          // Menggunakan Blob untuk menangani download jika link tidak langsung dapat diunduh
+          function downloadVideo(url, filename) {
+            axios.get(url, { responseType: 'blob' })
+              .then(response => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', filename);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+              })
+              .catch(error => {
+                alert('Error downloading video.');
+              });
+          }
 
-          // Jika video tanpa watermark tersedia, buat link untuk download di server Anda
+          // Unduh video tanpa watermark
           if (videoData.no_watermark) {
-            document.getElementById('noWatermarkLink').href = `${serverUrl}${encodeURIComponent(videoData.no_watermark)}`;
-            document.getElementById('noWatermarkLink').setAttribute('download', 'video_no_watermark.mp4');
+            document.getElementById('noWatermarkLink').addEventListener('click', () => {
+              downloadVideo(videoData.no_watermark, 'video_no_watermark.mp4');
+            });
           } else {
             document.getElementById('noWatermarkLink').style.display = 'none';
           }
 
-          // Jika video dengan watermark tersedia, buat link untuk download di server Anda
+          // Unduh video dengan watermark
           if (videoData.watermark) {
-            document.getElementById('watermarkLink').href = `${serverUrl}${encodeURIComponent(videoData.watermark)}`;
-            document.getElementById('watermarkLink').setAttribute('download', 'video_with_watermark.mp4');
+            document.getElementById('watermarkLink').addEventListener('click', () => {
+              downloadVideo(videoData.watermark, 'video_with_watermark.mp4');
+            });
           } else {
             document.getElementById('watermarkLink').style.display = 'none';
           }
