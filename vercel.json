@@ -1,24 +1,10 @@
+
 {
-    "rewrites": [
-        {
-            "source": "/index",
-            "destination": "/index.html"
-        },
-        {
-            "source": "/donate",
-            "destination": "/donate.html"
-        },
-        {
-            "source": "/features",
-            "destination": "/features.html"
-        },
-        {
-            "source": "/pricing",
-            "destination": "/pricing.html"
-        },
-        {
-            "source": "/tqto",
-            "destination": "/tqto.html"
-        }
-    ]
+  "rewrites": [
+    { "source": "/home", "destination": "/index.html" },
+    { "source": "/donate", "destination": "/donate.html" },
+    { "source": "/features", "destination": "/features.html" },
+    { "source": "/pricing", "destination": "/pricing.html" },
+    { "source": "/tqto", "destination": "/tqto.html" }
+  ]
 }
