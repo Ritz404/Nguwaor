@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Downloader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #E1306C;
+            --secondary: #777777;
+            --accent: #405DE6;
+            --light: #F5F7FA;
+            --dark: #262626;
+            --success: #10B981;
+            --error: #EF4444;
+            --gradient: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 1s;
+        }
+        
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo i {
+            font-size: 2.8rem;
+        }
+        
+        .tagline {
+            color: var(--secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .download-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            margin-bottom: 3rem;
+            animation: fadeInUp 1s;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .url-input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .url-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(225, 48, 108, 0.2);
+        }
+        
+        .download-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .download-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .download-btn:active {
+            transform: translateY(0);
+        }
+        
+        .result-container {
+            display: none;
+            margin-top: 2rem;
+            animation: fadeIn 0.5s;
+        }
+        
+        .media-container {
+            background: #f8fafc;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .media-item {
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .media-item img, 
+        .media-item video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .media-item video {
+            background: black;
+        }
+        
+        .media-info {
+            padding: 1.5rem;
+        }
+        
+        .media-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .media-meta {
+            display: flex;
+            gap: 1.5rem;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .media-caption {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f0f2f5;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .download-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .download-option-btn {
+            background-color: white;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .download-option-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(225, 48, 108, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        .error-message {
+            color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
+        .how-to-use {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            margin-bottom: 3rem;
+            animation: fadeInUp 1s 0.2s both;
+        }
+        
+        .steps {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .step {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .step-number {
+            background: var(--gradient);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .step-description {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            color: var(--secondary);
+            padding: 2rem 0;
+            font-size: 0.9rem;
+            animation: fadeIn 1s 0.4s both;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        
+        .badge-video {
+            background-color: rgba(64, 93, 230, 0.1);
+            color: var(--accent);
+        }
+        
+        .badge-photo {
+            background-color: rgba(225, 48, 108, 0.1);
+            color: var(--primary);
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .download-section {
+                padding: 1.5rem;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .download-btn {
+                padding: 1rem;
+                justify-content: center;
+            }
+            
+            .download-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fab fa-instagram"></i>
+                <span>Instagram Downloader</span>
+            </div>
+            <p class="tagline">Download photos, videos, and reels from Instagram with high quality. Fast, free, and easy to use!</p>
+        </header>
+        
+        <section class="download-section">
+            <h2 class="section-title">Download Instagram Content</h2>
+            <div class="input-group">
+                <input type="text" class="url-input" placeholder="Paste Instagram post/reel/story URL here..." id="igUrl">
+                <button class="download-btn" id="downloadBtn">
+                    <i class="fas fa-download"></i> Download
+                </button>
+            </div>
+            
+            <div class="error-message" id="errorMessage"></div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Fetching content data, please wait...</p>
+            </div>
+            
+            <div class="result-container" id="resultContainer">
+                <div class="media-container">
+                    <div class="media-grid" id="mediaGrid"></div>
+                    <div class="media-info">
+                        <h3 class="media-title" id="mediaTitle">
+                            Instagram Content
+                            <span class="badge" id="mediaTypeBadge"></span>
+                        </h3>
+                        <div class="media-meta">
+                            <span><i class="fas fa-heart"></i> <span id="mediaLikes">0</span></span>
+                            <span><i class="fas fa-comment"></i> <span id="mediaComments">0</span></span>
+                            <span><i class="fas fa-user"></i> <span id="mediaAuthor">unknown</span></span>
+                        </div>
+                        <div class="media-caption" id="mediaCaption"></div>
+                        <div class="download-options" id="downloadOptions"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="how-to-use">
+            <h2 class="section-title">How to Download Instagram Content</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4 class="step-title">Copy Post Link</h4>
+                        <p class="step-description">Go to Instagram and copy the link of the post, reel, or story you want to download.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4 class="step-title">Paste URL</h4>
+                        <p class="step-description">Paste the Instagram URL in the input box above.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4 class="step-title">Download Content</h4>
+                        <p class="step-description">Click the download button and save your content in high quality.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>© 2023 Instagram Downloader. All rights reserved.</p>
+            <p>This tool does not store any content on its server. All media is downloaded directly from Instagram.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const downloadBtn = document.getElementById('downloadBtn');
+            const igUrlInput = document.getElementById('igUrl');
+            const resultContainer = document.getElementById('resultContainer');
+            const mediaGrid = document.getElementById('mediaGrid');
+            const mediaLikes = document.getElementById('mediaLikes');
+            const mediaComments = document.getElementById('mediaComments');
+            const mediaAuthor = document.getElementById('mediaAuthor');
+            const mediaCaption = document.getElementById('mediaCaption');
+            const mediaTypeBadge = document.getElementById('mediaTypeBadge');
+            const downloadOptions = document.getElementById('downloadOptions');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            let currentMediaData = null;
+            
+            downloadBtn.addEventListener('click', async function() {
+                const url = igUrlInput.value.trim();
+                
+                if (!url) {
+                    showError('Please enter an Instagram URL');
+                    return;
+                }
+                
+                if (!isValidInstagramUrl(url)) {
+                    showError('Please enter a valid Instagram URL (post, reel, or story)');
+                    return;
+                }
+                
+                // Show loading, hide results and error
+                loading.style.display = 'block';
+                resultContainer.style.display = 'none';
+                errorMessage.style.display = 'none';
+                mediaGrid.innerHTML = '';
+                downloadOptions.innerHTML = '';
+                
+                try {
+                    // Using a public API (replace with your own backend service if needed)
+                    // Note: This is just an example - you'll need to find a working API or implement your own
+                    const apiUrl = `https://api.freyamd.biz.id/instagram?url=${encodeURIComponent(url)}`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch content');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (!data.media || data.media.length === 0) {
+                        throw new Error('No media found in this URL');
+                    }
+                    
+                    // Store media data
+                    currentMediaData = data;
+                    
+                    // Update UI with media
+                    displayMedia(data);
+                    
+                    // Show results
+                    resultContainer.style.display = 'block';
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    showError('Failed to download content. Please check the URL and try again. Error: ' + error.message);
+                    
+                    // For demo purposes, we'll simulate a successful response with dummy data
+                    // Remove this in production
+                    simulateSuccessResponse(url);
+                } finally {
+                    loading.style.display = 'none';
+                }
+            });
+            
+            // This is just for demo purposes - remove in production
+            function simulateSuccessResponse(url) {
+                const isVideo = Math.random() > 0.5;
+                const dummyData = {
+                    media: [
+                        isVideo ? 
+                        'https://freyamd.biz.id/sample-video.mp4' : 
+                        'https://freyamd.biz.id/sample-image.jpg'
+                    ],
+                    metadata: {
+                        username: 'instagram_user',
+                        like: Math.floor(Math.random() * 10000),
+                        comment: Math.floor(Math.random() * 1000),
+                        caption: 'This is a sample Instagram post caption. In a real implementation, this would be fetched from the API.'
+                    }
+                };
+                
+                currentMediaData = dummyData;
+                displayMedia(dummyData);
+                resultContainer.style.display = 'block';
+            }
+            
+            function displayMedia(data) {
+                // Clear previous content
+                mediaGrid.innerHTML = '';
+                
+                // Display all media items
+                data.media.forEach((mediaUrl, index) => {
+                    const mediaItem = document.createElement('div');
+                    mediaItem.className = 'media-item';
+                    
+                    if (mediaUrl.includes('.mp4') || mediaUrl.includes('.mov')) {
+                        // Video element
+                        const video = document.createElement('video');
+                        video.src = mediaUrl;
+                        video.controls = true;
+                        video.muted = true;
+                        mediaItem.appendChild(video);
+                    } else {
+                        // Image element
+                        const img = document.createElement('img');
+                        img.src = mediaUrl;
+                        img.alt = 'Instagram photo';
+                        mediaItem.appendChild(img);
+                    }
+                    
+                    mediaGrid.appendChild(mediaItem);
+                });
+                
+                // Update metadata if available
+                if (data.metadata) {
+                    mediaAuthor.textContent = data.metadata.username || 'unknown';
+                    mediaLikes.textContent = formatNumber(data.metadata.like) || '0';
+                    mediaComments.textContent = formatNumber(data.metadata.comment) || '0';
+                    
+                    if (data.metadata.caption) {
+                        mediaCaption.textContent = data.metadata.caption;
+                        mediaCaption.style.display = 'block';
+                    } else {
+                        mediaCaption.style.display = 'none';
+                    }
+                    
+                    // Set media type badge
+                    const isVideo = data.media.some(url => url.includes('.mp4') || url.includes('.mov'));
+                    mediaTypeBadge.textContent = isVideo ? 'Video' : 'Photo';
+                    mediaTypeBadge.className = isVideo ? 'badge badge-video' : 'badge badge-photo';
+                    
+                    // Create download buttons for each quality
+                    createDownloadButtons(data.media, isVideo);
+                }
+            }
+            
+            function createDownloadButtons(mediaUrls, isVideo) {
+                downloadOptions.innerHTML = '';
+                
+                mediaUrls.forEach((url, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'download-option-btn';
+                    btn.innerHTML = `<i class="fas fa-download"></i> Download ${isVideo ? 'Video' : 'Photo'} ${mediaUrls.length > 1 ? index + 1 : ''}`;
+                    
+                    btn.addEventListener('click', () => {
+                        downloadMedia(url, isVideo ? 'instagram-video.mp4' : 'instagram-photo.jpg');
+                    });
+                    
+                    downloadOptions.appendChild(btn);
+                });
+            }
+            
+            function isValidInstagramUrl(url) {
+                return url.includes('instagram.com/p/') || 
+                       url.includes('instagram.com/reel/') || 
+                       url.includes('instagram.com/stories/') || 
+                       url.includes('instagram.com/tv/');
+            }
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                resultContainer.style.display = 'none';
+                loading.style.display = 'none';
+            }
+            
+            function formatNumber(num) {
+                if (!num) return '0';
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+            
+            function downloadMedia(url, filename) {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        });
+    </script>
+</body>
+</html>
